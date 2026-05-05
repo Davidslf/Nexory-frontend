@@ -1,0 +1,23 @@
+README.md
+  88272df344e8856d 1,3-4,6,8,10,12-14,16,18,20,22-24,26-27,30-86,88-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "d990d4aa9a2f62fb14f6dd58baf3e52b0a2dfc43",
+  "prompts": {
+    "88272df344e8856d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3d936897-5d99-4f68-8594-8b19ff3b1708",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Davidslf",
+      "messages": [],
+      "total_additions": 93,
+      "total_deletions": 70,
+      "accepted_lines": 93,
+      "overriden_lines": 0
+    }
+  }
+}
