@@ -1,0 +1,571 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+/* Dark variant toggle */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ═══════════════════════════════════════════════════════════════════
+   NEXORY — Notion-inspired design system
+   Warm neutrals · Inter · Whisper borders · Soft shadows
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root { color-scheme: light; }
+[data-theme="dark"] { color-scheme: dark; }
+
+html, body {
+  font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@theme {
+  /* ─── Surfaces ─────────────────────────────────────────────────── */
+  --color-background:      #f6f5f4;
+  --color-surface:         #ffffff;
+  --color-surface-raised:  #f6f5f4;
+  --color-surface-input:   #ffffff;
+
+  /* ─── Borders ──────────────────────────────────────────────────── */
+  --color-border:          rgba(0,0,0,0.1);
+  --color-border-strong:   rgba(0,0,0,0.2);
+
+  /* ─── Text ─────────────────────────────────────────────────────── */
+  --color-text-main:       rgba(0,0,0,0.95);
+  --color-text-muted:      #615d59;
+  --color-text-subtle:     #a39e98;
+
+  /* ─── Brand ────────────────────────────────────────────────────── */
+  --color-primary:         #0075de;
+  --color-primary-active:  #005bab;
+  --color-cyan:            #0075de;
+  --color-electric-cyan:   #0075de;
+  --color-deep-blue:       #213183;
+  --color-dark-navy:       #213183;
+
+  /* ─── Semantic ─────────────────────────────────────────────────── */
+  --color-success:         #1aae39;
+  --color-warning:         #dd5b00;
+  --color-danger:          #b91c1c;
+  --color-info:            #0075de;
+
+  /* ─── Scale (kept for compat) ───────────────────────────────────── */
+  --color-cyan-50:  #f2f9ff;
+  --color-cyan-100: #daeeff;
+  --color-cyan-200: #b0d8ff;
+  --color-cyan-300: #74b8ff;
+  --color-cyan-400: #4dabf7;
+  --color-cyan-500: #0075de;
+  --color-cyan-600: #005bab;
+  --color-cyan-700: #003f7a;
+
+  --color-blue-50:  #f2f9ff;
+  --color-blue-100: #daeeff;
+  --color-blue-200: #b0d8ff;
+  --color-blue-300: #74b8ff;
+  --color-blue-400: #4dabf7;
+  --color-blue-500: #0075de;
+  --color-blue-600: #005bab;
+  --color-blue-700: #003f7a;
+  --color-blue-800: #213183;
+  --color-blue-900: #001f5e;
+
+  /* ─── Fonts ────────────────────────────────────────────────────── */
+  --font-sans:    'Inter', -apple-system, system-ui, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+  --font-display: 'Inter', -apple-system, system-ui, sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DARK THEME — warm dark variant of the Notion palette
+   ═══════════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --color-background:      #1a1917;
+  --color-surface:         #221f1c;
+  --color-surface-raised:  #2a2723;
+  --color-surface-input:   #1a1917;
+
+  --color-border:          rgba(255,255,255,0.09);
+  --color-border-strong:   rgba(255,255,255,0.16);
+
+  --color-text-main:       rgba(255,255,255,0.92);
+  --color-text-muted:      #a39e98;
+  --color-text-subtle:     #615d59;
+
+  --color-primary:         #4dabf7;
+  --color-cyan:            #4dabf7;
+  --color-success:         #37d467;
+  --color-warning:         #f08c4b;
+  --color-danger:          #f47070;
+  --color-info:            #4dabf7;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SEMANTIC DESIGN TOKENS
+   ═══════════════════════════════════════════════════════════════════ */
+:root {
+  /* Status badges */
+  --badge-active-bg:        rgba(26, 174, 57, 0.08);
+  --badge-active-fg:        #1aae39;
+  --badge-active-bd:        rgba(26, 174, 57, 0.2);
+
+  --badge-suspended-bg:     rgba(185, 28, 28, 0.08);
+  --badge-suspended-fg:     #b91c1c;
+  --badge-suspended-bd:     rgba(185, 28, 28, 0.2);
+
+  --badge-pending-bg:       rgba(221, 91, 0, 0.08);
+  --badge-pending-fg:       #dd5b00;
+  --badge-pending-bd:       rgba(221, 91, 0, 0.2);
+
+  --badge-online-bg:        rgba(26, 174, 57, 0.08);
+  --badge-online-fg:        #1aae39;
+  --badge-online-bd:        rgba(26, 174, 57, 0.2);
+
+  --badge-offline-bg:       rgba(185, 28, 28, 0.08);
+  --badge-offline-fg:       #b91c1c;
+  --badge-offline-bd:       rgba(185, 28, 28, 0.2);
+
+  --badge-maintenance-bg:   rgba(221, 91, 0, 0.08);
+  --badge-maintenance-fg:   #dd5b00;
+  --badge-maintenance-bd:   rgba(221, 91, 0, 0.2);
+
+  --badge-pending-status-bg:  rgba(97, 93, 89, 0.08);
+  --badge-pending-status-fg:  #615d59;
+  --badge-pending-status-bd:  rgba(97, 93, 89, 0.18);
+
+  --badge-inprogress-bg:    rgba(0, 117, 222, 0.08);
+  --badge-inprogress-fg:    #0075de;
+  --badge-inprogress-bd:    rgba(0, 117, 222, 0.2);
+
+  --badge-reviewed-bg:      rgba(221, 91, 0, 0.08);
+  --badge-reviewed-fg:      #dd5b00;
+  --badge-reviewed-bd:      rgba(221, 91, 0, 0.2);
+
+  --badge-resolved-bg:      rgba(26, 174, 57, 0.08);
+  --badge-resolved-fg:      #1aae39;
+  --badge-resolved-bd:      rgba(26, 174, 57, 0.2);
+
+  /* Action buttons */
+  --btn-danger-bg:    rgba(185, 28, 28, 0.06);
+  --btn-danger-fg:    #b91c1c;
+  --btn-danger-bd:    rgba(185, 28, 28, 0.18);
+  --btn-danger-h:     rgba(185, 28, 28, 0.10);
+
+  --btn-success-bg:   rgba(26, 174, 57, 0.06);
+  --btn-success-fg:   #1aae39;
+  --btn-success-bd:   rgba(26, 174, 57, 0.18);
+  --btn-success-h:    rgba(26, 174, 57, 0.10);
+
+  --btn-cyan-bg:      rgba(0, 117, 222, 0.07);
+  --btn-cyan-fg:      #0075de;
+  --btn-cyan-bd:      rgba(0, 117, 222, 0.2);
+  --btn-cyan-h:       rgba(0, 117, 222, 0.12);
+
+  --btn-ghost-bg:     rgba(0, 0, 0, 0.03);
+  --btn-ghost-fg:     #615d59;
+  --btn-ghost-bd:     rgba(0, 0, 0, 0.10);
+  --btn-ghost-h:      rgba(0, 0, 0, 0.06);
+
+  /* Notifications */
+  --notif-error-bg:   rgba(185, 28, 28, 0.06);
+  --notif-error-bd:   rgba(185, 28, 28, 0.15);
+  --notif-warning-bg: rgba(221, 91, 0, 0.06);
+  --notif-warning-bd: rgba(221, 91, 0, 0.15);
+  --notif-success-bg: rgba(26, 174, 57, 0.06);
+  --notif-success-bd: rgba(26, 174, 57, 0.15);
+  --notif-default-bg: rgba(0, 0, 0, 0.04);
+  --notif-default-bd: rgba(0, 0, 0, 0.09);
+}
+
+[data-theme="dark"] {
+  --badge-active-bg:        rgba(55, 212, 103, 0.1);
+  --badge-active-fg:        #37d467;
+  --badge-active-bd:        rgba(55, 212, 103, 0.22);
+
+  --badge-suspended-bg:     rgba(244, 112, 112, 0.1);
+  --badge-suspended-fg:     #f47070;
+  --badge-suspended-bd:     rgba(244, 112, 112, 0.22);
+
+  --badge-pending-bg:       rgba(240, 140, 75, 0.1);
+  --badge-pending-fg:       #f08c4b;
+  --badge-pending-bd:       rgba(240, 140, 75, 0.22);
+
+  --badge-online-bg:        rgba(55, 212, 103, 0.1);
+  --badge-online-fg:        #37d467;
+  --badge-online-bd:        rgba(55, 212, 103, 0.22);
+
+  --badge-offline-bg:       rgba(244, 112, 112, 0.1);
+  --badge-offline-fg:       #f47070;
+  --badge-offline-bd:       rgba(244, 112, 112, 0.22);
+
+  --badge-maintenance-bg:   rgba(240, 140, 75, 0.1);
+  --badge-maintenance-fg:   #f08c4b;
+  --badge-maintenance-bd:   rgba(240, 140, 75, 0.22);
+
+  --badge-pending-status-bg:  rgba(163, 158, 152, 0.1);
+  --badge-pending-status-fg:  #a39e98;
+  --badge-pending-status-bd:  rgba(163, 158, 152, 0.2);
+
+  --badge-inprogress-bg:    rgba(77, 171, 247, 0.1);
+  --badge-inprogress-fg:    #4dabf7;
+  --badge-inprogress-bd:    rgba(77, 171, 247, 0.22);
+
+  --badge-reviewed-bg:      rgba(240, 140, 75, 0.1);
+  --badge-reviewed-fg:      #f08c4b;
+  --badge-reviewed-bd:      rgba(240, 140, 75, 0.22);
+
+  --badge-resolved-bg:      rgba(55, 212, 103, 0.1);
+  --badge-resolved-fg:      #37d467;
+  --badge-resolved-bd:      rgba(55, 212, 103, 0.22);
+
+  --btn-danger-bg:    rgba(244, 112, 112, 0.08);
+  --btn-danger-fg:    #f47070;
+  --btn-danger-bd:    rgba(244, 112, 112, 0.2);
+  --btn-danger-h:     rgba(244, 112, 112, 0.14);
+
+  --btn-success-bg:   rgba(55, 212, 103, 0.08);
+  --btn-success-fg:   #37d467;
+  --btn-success-bd:   rgba(55, 212, 103, 0.2);
+  --btn-success-h:    rgba(55, 212, 103, 0.14);
+
+  --btn-cyan-bg:      rgba(77, 171, 247, 0.07);
+  --btn-cyan-fg:      #4dabf7;
+  --btn-cyan-bd:      rgba(77, 171, 247, 0.2);
+  --btn-cyan-h:       rgba(77, 171, 247, 0.13);
+
+  --btn-ghost-bg:     rgba(255, 255, 255, 0.04);
+  --btn-ghost-fg:     rgba(255, 255, 255, 0.6);
+  --btn-ghost-bd:     rgba(255, 255, 255, 0.08);
+  --btn-ghost-h:      rgba(255, 255, 255, 0.07);
+
+  --notif-error-bg:   rgba(244, 112, 112, 0.08);
+  --notif-error-bd:   rgba(244, 112, 112, 0.18);
+  --notif-warning-bg: rgba(240, 140, 75, 0.08);
+  --notif-warning-bd: rgba(240, 140, 75, 0.18);
+  --notif-success-bg: rgba(55, 212, 103, 0.08);
+  --notif-success-bd: rgba(55, 212, 103, 0.18);
+  --notif-default-bg: rgba(255, 255, 255, 0.04);
+  --notif-default-bd: rgba(255, 255, 255, 0.07);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Notion card shadow — 4-layer soft elevation */
+.card-shadow {
+  box-shadow:
+    rgba(0,0,0,0.04) 0px 4px 18px,
+    rgba(0,0,0,0.027) 0px 2px 7.85px,
+    rgba(0,0,0,0.02) 0px 0.8px 2.93px,
+    rgba(0,0,0,0.01) 0px 0.175px 1.04px;
+}
+
+/* card-corner: clean Notion card — no bracket accents */
+.card-corner {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Removed dot-grid — Notion uses clean backgrounds */
+.dot-grid {
+  background-image: none;
+}
+
+/* Monospace data */
+.data-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Status badge classes */
+.badge-active     { background-color: var(--badge-active-bg);     color: var(--badge-active-fg);     border-color: var(--badge-active-bd); }
+.badge-suspended  { background-color: var(--badge-suspended-bg);  color: var(--badge-suspended-fg);  border-color: var(--badge-suspended-bd); }
+.badge-pending    { background-color: var(--badge-pending-bg);    color: var(--badge-pending-fg);    border-color: var(--badge-pending-bd); }
+.badge-online     { background-color: var(--badge-online-bg);     color: var(--badge-online-fg);     border-color: var(--badge-online-bd); }
+.badge-offline    { background-color: var(--badge-offline-bg);    color: var(--badge-offline-fg);    border-color: var(--badge-offline-bd); }
+.badge-maintenance{ background-color: var(--badge-maintenance-bg);color: var(--badge-maintenance-fg);border-color: var(--badge-maintenance-bd); }
+.badge-inprogress { background-color: var(--badge-inprogress-bg); color: var(--badge-inprogress-fg); border-color: var(--badge-inprogress-bd); }
+.badge-reviewed   { background-color: var(--badge-reviewed-bg);   color: var(--badge-reviewed-fg);   border-color: var(--badge-reviewed-bd); }
+.badge-resolved   { background-color: var(--badge-resolved-bg);   color: var(--badge-resolved-fg);   border-color: var(--badge-resolved-bd); }
+.badge-status-pending { background-color: var(--badge-pending-status-bg); color: var(--badge-pending-status-fg); border-color: var(--badge-pending-status-bd); }
+
+/* Action button classes */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: background-color 0.15s, transform 0.1s;
+  cursor: pointer;
+}
+.btn-action:active { transform: scale(0.97); }
+
+.btn-action-danger   { background-color: var(--btn-danger-bg);  color: var(--btn-danger-fg);  border-color: var(--btn-danger-bd); }
+.btn-action-danger:hover { background-color: var(--btn-danger-h); }
+
+.btn-action-success  { background-color: var(--btn-success-bg); color: var(--btn-success-fg); border-color: var(--btn-success-bd); }
+.btn-action-success:hover { background-color: var(--btn-success-h); }
+
+.btn-action-cyan     { background-color: var(--btn-cyan-bg);    color: var(--btn-cyan-fg);    border-color: var(--btn-cyan-bd); }
+.btn-action-cyan:hover { background-color: var(--btn-cyan-h); }
+
+.btn-action-ghost    { background-color: var(--btn-ghost-bg);   color: var(--btn-ghost-fg);   border-color: var(--btn-ghost-bd); }
+.btn-action-ghost:hover { background-color: var(--btn-ghost-h); }
+
+/* Notification items */
+.notif-error   { background-color: var(--notif-error-bg);   border-color: var(--notif-error-bd); }
+.notif-warning { background-color: var(--notif-warning-bg); border-color: var(--notif-warning-bd); }
+.notif-success { background-color: var(--notif-success-bg); border-color: var(--notif-success-bd); }
+.notif-default { background-color: var(--notif-default-bg); border-color: var(--notif-default-bd); }
+
+/* Active nav bar indicator */
+.nav-active-bar { position: relative; }
+.nav-active-bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 55%;
+  background: var(--color-primary);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Notion gradient */
+.gradient-nexory { background: linear-gradient(135deg, #0075de 0%, #213183 100%); }
+.text-gradient-nexory {
+  background: linear-gradient(135deg, #0075de 0%, #62aef0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Pulsing dot */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.pulse-dot { animation: pulse-glow 2.4s ease-in-out infinite; }
+
+/* Table row hover */
+.table-row-hover {
+  transition: background-color 0.12s;
+}
+.table-row-hover:hover td {
+  background-color: var(--color-surface-raised);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.18); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.13); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   DISPLAY TYPOGRAPHY — Notion Inter scale
+   ═══════════════════════════════════════════════════════════════════ */
+
+.display-number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 3.5rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.display-number-lg {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 4.5rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.display-heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION DIVIDERS
+   ═══════════════════════════════════════════════════════════════════ */
+
+.section-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 1.5rem;
+}
+.section-divider-title {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  letter-spacing: -0.02em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   STAT BLOCKS — horizontal stat row
+   ═══════════════════════════════════════════════════════════════════ */
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 1.75rem 2rem 1.5rem;
+  border-right: 1px solid var(--color-border);
+  position: relative;
+}
+.stat-block:last-child { border-right: none; }
+
+.stat-block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--stat-accent, transparent);
+}
+
+.stat-block-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  margin-bottom: 0.625rem;
+}
+.stat-block-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.625rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-main);
+}
+.stat-block-unit {
+  font-weight: 400;
+  font-size: 1.25rem;
+  letter-spacing: 0;
+  color: var(--color-text-subtle);
+  margin-left: 0.125rem;
+}
+.stat-block-trend {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LINE TABLE — editorial horizontal-separator table
+   ═══════════════════════════════════════════════════════════════════ */
+
+.line-table { width: 100%; border-collapse: collapse; }
+.line-table th {
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  background: transparent;
+}
+.line-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.875rem;
+  color: var(--color-text-main);
+  vertical-align: middle;
+}
+.line-table tr:last-child td { border-bottom: none; }
+.line-table tbody tr { transition: background-color 0.1s; }
+.line-table tbody tr:hover td { background-color: var(--color-surface-raised); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   NETWORK SEMAPHORE
+   ═══════════════════════════════════════════════════════════════════ */
+
+.semaphore-green  { --sem-color: var(--color-success); --sem-bg: rgba(26, 174, 57, 0.06);  --sem-bd: rgba(26, 174, 57, 0.18); }
+.semaphore-yellow { --sem-color: var(--color-warning); --sem-bg: rgba(221, 91, 0, 0.06);   --sem-bd: rgba(221, 91, 0, 0.18); }
+.semaphore-red    { --sem-color: var(--color-danger);  --sem-bg: rgba(185, 28, 28, 0.06);  --sem-bd: rgba(185, 28, 28, 0.18); }
+.semaphore-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--sem-color);
+  box-shadow: 0 0 8px var(--sem-color);
+  flex-shrink: 0;
+}
+.semaphore-bar {
+  background-color: var(--sem-bg);
+  border: 1px solid var(--sem-bd);
+  border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TASK PRIORITY — left-border accent
+   ═══════════════════════════════════════════════════════════════════ */
+
+.task-urgent { border-left: 3px solid var(--color-danger); }
+.task-high   { border-left: 3px solid var(--color-warning); }
+.task-normal { border-left: 3px solid var(--color-border-strong); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   TIMELINE — communication history
+   ═══════════════════════════════════════════════════════════════════ */
+
+.timeline-line {
+  position: absolute;
+  left: 7px;
+  top: 24px;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-border);
+}
+.timeline-dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  flex-shrink: 0;
+}
+
+/* Select element theming */
+select {
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
+  border-color: var(--color-border);
+}
+select option {
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
+}
