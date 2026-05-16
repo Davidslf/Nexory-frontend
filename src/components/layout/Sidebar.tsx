@@ -8,6 +8,7 @@ import {
   Wrench,
   Scissors,
   MessageSquare,
+  X,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { Logo, LogoIcon } from '@/components/ui/Logo';
@@ -48,27 +49,40 @@ const UserAvatar = ({ name, role, collapsed }: { name: string; role: string; col
 
 export const Sidebar = () => {
   const { user } = useAuth();
-  const { isCollapsed, toggleSidebar } = useSidebar();
+  const { isCollapsed, isMobile, isMobileOpen, toggleSidebar, closeMobileSidebar } = useSidebar();
 
   const navItems = allNavItems.filter(item => canAccessRoute(user?.role, item.path));
   const roleName = user?.role === 'admin' ? 'Administrador' : 'Operador';
 
-  return (
+  // On mobile the sidebar is always "expanded" (never collapsed) — it slides in/out as a drawer
+  const collapsed = isMobile ? false : isCollapsed;
+
+  const sidebarContent = (
     <aside
       className={cn(
-        'h-screen fixed left-0 top-0 flex flex-col z-50 transition-all duration-300',
+        'h-screen flex flex-col z-50 transition-all duration-300',
         'bg-surface border-r border-border',
-        isCollapsed ? 'w-[64px]' : 'w-[220px]',
+        // Mobile: fixed drawer sliding from left
+        isMobile
+          ? cn(
+              'fixed left-0 top-0 w-[260px] shadow-2xl',
+              isMobileOpen ? 'translate-x-0' : '-translate-x-full',
+            )
+          // Desktop: fixed sidebar, collapsible
+          : cn(
+              'fixed left-0 top-0',
+              collapsed ? 'w-[64px]' : 'w-[220px]',
+            ),
       )}
     >
       {/* Brand header */}
       <div
         className={cn(
           'flex items-center border-b border-border relative',
-          isCollapsed ? 'h-14 justify-center px-3' : 'h-14 px-4 gap-3',
+          collapsed ? 'h-14 justify-center px-3' : 'h-14 px-4 gap-3',
         )}
       >
-        {isCollapsed ? (
+        {collapsed ? (
           <Tooltip content="Nexory" side="right">
             <span>
               <LogoIcon size={28} />
@@ -89,20 +103,30 @@ export const Sidebar = () => {
           </>
         )}
 
-        {/* Collapse toggle */}
-        <button
-          onClick={toggleSidebar}
-          className={cn(
-            'absolute -right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center z-10',
-            'bg-surface border border-border text-text-subtle shadow-sm',
-            'hover:text-text-main hover:border-border transition-colors',
-          )}
-          aria-label={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
-        >
-          {isCollapsed
-            ? <ChevronRight className="w-2.5 h-2.5" />
-            : <ChevronLeft  className="w-2.5 h-2.5" />}
-        </button>
+        {/* Mobile: close button | Desktop: collapse toggle */}
+        {isMobile ? (
+          <button
+            onClick={closeMobileSidebar}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-text-subtle hover:text-text-main hover:bg-black/[0.06] transition-colors"
+            aria-label="Cerrar menú"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        ) : (
+          <button
+            onClick={toggleSidebar}
+            className={cn(
+              'absolute -right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center z-10',
+              'bg-surface border border-border text-text-subtle shadow-sm',
+              'hover:text-text-main hover:border-border transition-colors',
+            )}
+            aria-label={collapsed ? 'Expandir menú' : 'Colapsar menú'}
+          >
+            {collapsed
+              ? <ChevronRight className="w-2.5 h-2.5" />
+              : <ChevronLeft  className="w-2.5 h-2.5" />}
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -113,10 +137,11 @@ export const Sidebar = () => {
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={isMobile ? closeMobileSidebar : undefined}
               className={({ isActive }) =>
                 cn(
                   'relative flex items-center gap-2.5 rounded-lg transition-all duration-100 group',
-                  isCollapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5',
+                  collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5',
                   isActive
                     ? 'bg-primary/[0.08] text-text-main nav-active-bar'
                     : 'text-text-muted hover:text-text-main hover:bg-black/[0.04]',
@@ -128,11 +153,11 @@ export const Sidebar = () => {
                   <Icon
                     className={cn(
                       'flex-shrink-0 transition-colors',
-                      isCollapsed ? 'w-[18px] h-[18px]' : 'w-[15px] h-[15px]',
+                      collapsed ? 'w-[18px] h-[18px]' : 'w-[15px] h-[15px]',
                       isActive ? 'text-primary' : 'text-text-muted group-hover:text-text-main',
                     )}
                   />
-                  {!isCollapsed && (
+                  {!collapsed && (
                     <span className="text-[13px] font-medium flex-1">{item.label}</span>
                   )}
                 </>
@@ -140,7 +165,7 @@ export const Sidebar = () => {
             </NavLink>
           );
 
-          if (isCollapsed) {
+          if (collapsed) {
             return (
               <Tooltip key={item.path} content={item.label} side="right">
                 <span className="block">{link}</span>
@@ -152,15 +177,15 @@ export const Sidebar = () => {
       </nav>
 
       {/* User footer */}
-      <div className={cn('border-t border-border', isCollapsed ? 'p-2 flex flex-col items-center gap-2' : 'px-3 py-3')}>
+      <div className={cn('border-t border-border', collapsed ? 'p-2 flex flex-col items-center gap-2' : 'px-3 py-3')}>
         {user && (
           <UserAvatar
             name={user.name}
             role={roleName}
-            collapsed={isCollapsed}
+            collapsed={collapsed}
           />
         )}
-        {!isCollapsed && (
+        {!collapsed && (
           <div className="flex items-center gap-1.5 mt-2.5">
             <span className="w-1.5 h-1.5 rounded-full bg-success flex-shrink-0" />
             <span className="text-[10px] text-text-subtle" style={{ fontFamily: 'var(--font-mono)' }}>v1.0.0-beta</span>
@@ -168,5 +193,19 @@ export const Sidebar = () => {
         )}
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Mobile backdrop */}
+      {isMobile && isMobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+          onClick={closeMobileSidebar}
+          aria-hidden="true"
+        />
+      )}
+      {sidebarContent}
+    </>
   );
 };

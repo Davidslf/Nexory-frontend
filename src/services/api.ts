@@ -20,11 +20,14 @@ const req = async <T>(path: string, options: RequestInit = {}): Promise<T> => {
 };
 
 // ─── Auth ─────────────────────────────────────────────────────────
+export type OtpChannel = 'whatsapp' | 'email' | 'both';
+
 export type LoginStep1Response = {
-  message: string;
-  userId: string;
+  message:      string;
+  userId:       string;
   phoneMasked?: string;
-  devCode?: string; // solo en development
+  emailMasked?: string;
+  devCode?:     string; // solo en development
 };
 
 export type LoginStep2Response = {
@@ -36,10 +39,10 @@ export type MeResponse = {
   id: string; username: string; email: string; name: string; role: string;
 };
 
-export const apiLoginStep1 = (username: string, password: string) =>
+export const apiLoginStep1 = (username: string, password: string, channel: OtpChannel = 'whatsapp') =>
   req<LoginStep1Response>('/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ username, password, channel }),
   });
 
 export const apiLoginStep2 = (userId: string, code: string) =>
@@ -49,6 +52,8 @@ export const apiLoginStep2 = (userId: string, code: string) =>
   });
 
 export const apiGetMe = () => req<MeResponse>('/auth/me');
+export const apiGetWahaStatus = () =>
+  req<{ ok: boolean; status: string; message: string }>('/auth/waha-status');
 
 // ─── Dashboard ────────────────────────────────────────────────────
 export const apiGetDashboardStats = () =>
@@ -65,6 +70,9 @@ export const apiGetClients = (params?: Record<string, string>) => {
 
 export const apiGetClientById = (id: string) =>
   req<unknown>(`/clients/${id}`);
+
+export const apiCreateClient = (body: unknown) =>
+  req<unknown>('/clients', { method: 'POST', body: JSON.stringify(body) });
 
 export const apiToggleClientStatus = (id: string) =>
   req<unknown>(`/clients/${id}/toggle-status`, { method: 'PATCH' });
@@ -121,8 +129,31 @@ export const apiGetCuts = () => req<unknown[]>('/cuts');
 export const apiExecuteCut = (id: string) => req<unknown>(`/cuts/${id}/execute`, { method: 'PATCH' });
 export const apiRestoreCut = (id: string) => req<unknown>(`/cuts/${id}/restore`, { method: 'PATCH' });
 
-// ─── Network / Diagnostics (stub — no backend yet) ────────────────
-export const apiDiagnoseClient = (_id: string): Promise<null> => Promise.reject(new Error('not implemented'));
+// ─── Network / Diagnostics ────────────────────────────────────────
+export interface DiagnoseCheck { label: string; ok: boolean; detail: string }
+export interface DiagnoseResult {
+  success:        boolean;
+  hasPppoe:       boolean;
+  pppoeUsername?: string;
+  message?:       string;
+  error?:         string;
+  data?: {
+    secretExists:   boolean;
+    secretDisabled: boolean;
+    secretProfile:  string;
+    online:         boolean;
+    uptime?:        string;
+    assignedIp?:    string;
+    bytesIn?:       string;
+    bytesOut?:      string;
+    checks:         DiagnoseCheck[];
+  };
+}
+export const apiDiagnoseClient = (id: string) =>
+  req<DiagnoseResult>(`/clients/${id}/diagnose`);
+
+export const apiRestartClientSession = (id: string) =>
+  req<{ success: boolean; wasOnline: boolean; message: string }>(`/clients/${id}/restart-session`, { method: 'POST' });
 
 // ─── MikroTik ─────────────────────────────────────────────────────
 export const apiMikrotikStatus   = () => req<{ success: boolean; version?: string }>('/mikrotik/status');
@@ -131,3 +162,10 @@ export const apiMikrotikActivos  = () => req<{ success: boolean; data: unknown[]
 export const apiMikrotikSync     = () => req<{ success: boolean; message: string; created: number; skipped: number }>('/mikrotik/sync', { method: 'POST' });
 export const apiMikrotikActivar   = (username: string) => req<{ success: boolean }>(`/mikrotik/clientes/${username}/activar`,   { method: 'POST' });
 export const apiMikrotikDesactivar = (username: string) => req<{ success: boolean }>(`/mikrotik/clientes/${username}/desactivar`, { method: 'POST' });
+
+// ─── Admin / Dev ──────────────────────────────────────────────────
+export const apiRunCutJob = () =>
+  req<{ ok: boolean; message: string }>('/admin/run-cut-job', { method: 'POST' });
+
+export const apiMarkPaymentOverdue = (paymentId: string) =>
+  req<unknown>(`/payments/${paymentId}/mark-overdue`, { method: 'PATCH' });

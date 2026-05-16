@@ -176,7 +176,7 @@ export const CutsPage = () => {
       className="space-y-5"
     >
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-text-main tracking-tight">Cortes de Servicio</h1>
           <p className="text-sm text-text-muted mt-0.5">
@@ -187,7 +187,7 @@ export const CutsPage = () => {
           <button
             onClick={loadCuts}
             disabled={loading}
-            className="btn-action btn-action-ghost px-3 py-2 text-sm disabled:opacity-50"
+            className="btn-action btn-action-ghost px-3 py-2 text-sm disabled:opacity-50 self-start sm:self-auto"
           >
             <RefreshCw className={cn('w-3.5 h-3.5', loading && 'animate-spin')} />
             Actualizar
@@ -212,19 +212,21 @@ export const CutsPage = () => {
       </div>
 
       {/* Filters toolbar */}
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
         <SearchInput
           value={search}
           onChange={v => { setSearch(v); setPage(1); }}
           placeholder="Buscar cliente o razón..."
-          className="w-56"
+          className="w-full sm:w-56"
         />
-        <SegmentControl
-          segments={segments}
-          value={filter}
-          onChange={v => { setFilter(v); setPage(1); }}
-          size="sm"
-        />
+        <div className="overflow-x-auto pb-1 sm:pb-0 -mx-3 px-3 sm:mx-0 sm:px-0">
+          <SegmentControl
+            segments={segments}
+            value={filter}
+            onChange={v => { setFilter(v); setPage(1); }}
+            size="sm"
+          />
+        </div>
       </div>
 
       {/* Table */}
@@ -245,7 +247,8 @@ export const CutsPage = () => {
           </div>
         ) : (
           <>
-            <table className="line-table">
+            <div className="overflow-x-auto">
+            <table className="line-table min-w-[560px]">
               <thead>
                 <tr>
                   <th>Cliente</th>
@@ -366,6 +369,7 @@ export const CutsPage = () => {
                 ))}
               </tbody>
             </table>
+            </div>{/* end overflow-x-auto */}
 
             {/* Footer: pagination */}
             <div className="px-5 py-3 border-t border-border bg-surface-raised/15">

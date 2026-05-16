@@ -49,26 +49,50 @@ const ActivityRow = ({ activity, index }: { activity: ActivityType; index: numbe
   const Icon = cfg.icon;
 
   return (
-    <motion.tr
-      initial={{ opacity: 0, x: -8 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.04 }}
-    >
-      <td>
-        <div className="flex items-center gap-2">
-          <Icon className={`w-4 h-4 flex-shrink-0 ${cfg.color}`} />
-          <span className="text-sm text-text-main">{activity.description}</span>
+    <>
+      {/* Desktop row */}
+      <motion.tr
+        className="hidden sm:table-row"
+        initial={{ opacity: 0, x: -8 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: index * 0.04 }}
+      >
+        <td>
+          <div className="flex items-center gap-2">
+            <Icon className={`w-4 h-4 flex-shrink-0 ${cfg.color}`} />
+            <span className="text-sm text-text-main">{activity.description}</span>
+          </div>
+        </td>
+        <td className="text-xs text-text-muted">{activity.userName || '—'}</td>
+        <td className="text-xs text-text-muted">{activity.clientName || activity.details || '—'}</td>
+        <td className="text-[11px] text-text-subtle data-mono whitespace-nowrap">
+          <span className="flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {format(new Date(activity.timestamp), 'd MMM, HH:mm', { locale: es })}
+          </span>
+        </td>
+      </motion.tr>
+
+      {/* Mobile card */}
+      <motion.div
+        className="sm:hidden flex items-start gap-3 py-3 border-b border-border last:border-0"
+        initial={{ opacity: 0, x: -8 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: index * 0.04 }}
+      >
+        <Icon className={`w-4 h-4 flex-shrink-0 mt-0.5 ${cfg.color}`} />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-text-main leading-tight">{activity.description}</p>
+          <p className="text-[11px] text-text-muted mt-0.5">
+            {activity.userName || '—'}
+            {(activity.clientName || activity.details) ? ` · ${activity.clientName || activity.details}` : ''}
+          </p>
         </div>
-      </td>
-      <td className="text-xs text-text-muted">{activity.userName || '—'}</td>
-      <td className="text-xs text-text-muted">{activity.clientName || activity.details || '—'}</td>
-      <td className="text-[11px] text-text-subtle data-mono whitespace-nowrap">
-        <span className="flex items-center gap-1">
-          <Clock className="w-3 h-3" />
+        <span className="text-[10px] text-text-subtle data-mono whitespace-nowrap flex-shrink-0">
           {format(new Date(activity.timestamp), 'd MMM, HH:mm', { locale: es })}
         </span>
-      </td>
-    </motion.tr>
+      </motion.div>
+    </>
   );
 };
 
@@ -193,11 +217,11 @@ export const DashboardPage = () => {
           <div className="border-t border-border grid grid-cols-3 divide-x divide-border">
             {[
               { label: 'Latencia', value: `${stats.averageLatency}ms` },
-              { label: 'Tickets Abiertos', value: String(stats.openTickets) },
-              { label: 'Tareas Pendientes', value: String(stats.pendingTasks) },
+              { label: 'Tickets', value: String(stats.openTickets) },
+              { label: 'Tareas', value: String(stats.pendingTasks) },
             ].map(m => (
-              <div key={m.label} className="px-4 py-3 text-center">
-                <span className="section-label block mb-1">{m.label}</span>
+              <div key={m.label} className="px-2 sm:px-4 py-3 text-center">
+                <span className="section-label block mb-1 whitespace-nowrap text-[9px] sm:text-[10px]">{m.label}</span>
                 <span className="text-sm font-semibold data-mono text-text-main">{m.value}</span>
               </div>
             ))}
@@ -248,7 +272,8 @@ export const DashboardPage = () => {
           <span className="section-divider-title">Actividad Reciente</span>
           <span className="ml-auto section-label">{activities.length} eventos</span>
         </div>
-        <div className="px-5 pb-2 overflow-x-auto">
+        {/* Desktop table */}
+        <div className="hidden sm:block px-5 pb-2 overflow-x-auto">
           <table className="line-table">
             <thead>
               <tr>
@@ -264,6 +289,12 @@ export const DashboardPage = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        {/* Mobile cards */}
+        <div className="sm:hidden px-4 pb-2">
+          {activities.map((a, i) => (
+            <ActivityRow key={a.id} activity={a} index={i} />
+          ))}
         </div>
       </motion.div>
     </motion.div>

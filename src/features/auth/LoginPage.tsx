@@ -2,10 +2,11 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
-import { apiLoginStep1, apiLoginStep2 } from '@/services/api';
+import { apiLoginStep1, apiLoginStep2, apiGetWahaStatus, type OtpChannel } from '@/services/api';
 import {
   LogIn, Lock, Shield, AlertCircle, Eye, EyeOff,
   MessageSquare, ArrowLeft, User as UserIcon, CheckCircle2,
+  WifiOff, Mail,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
 
@@ -80,10 +81,35 @@ export const LoginPage = () => {
   const [error,        setError]        = useState('');
   const [loading,      setLoading]      = useState(false);
   const [focused,      setFocused]      = useState<string | null>(null);
+  const [wahaOk,       setWahaOk]       = useState<boolean | null>(null);
+  const [channel,      setChannel]      = useState<OtpChannel>('whatsapp');
+  const [emailMasked,  setEmailMasked]  = useState('');
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { setSession } = useAuth();
   const navigate = useNavigate();
+
+  // Check WAHA status on mount and every 30s
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const res = await apiGetWahaStatus();
+        setWahaOk(res.ok);
+      } catch {
+        setWahaOk(false);
+      }
+    };
+    check();
+    const interval = setInterval(check, 30_000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Si WhatsApp está caído y el canal actual lo incluye → auto-switch a email
+  useEffect(() => {
+    if (wahaOk === false && (channel === 'whatsapp' || channel === 'both')) {
+      setChannel('email');
+    }
+  }, [wahaOk]);
 
   // Auto-foco en primer campo OTP al entrar al paso 2
   useEffect(() => {
@@ -112,9 +138,10 @@ export const LoginPage = () => {
     setError('');
     setLoading(true);
     try {
-      const res = await apiLoginStep1(username, password);
+      const res = await apiLoginStep1(username, password, channel);
       setUserId(res.userId);
       setPhoneMasked(res.phoneMasked || '');
+      setEmailMasked(res.emailMasked || '');
       if (res.devCode) setDevCode(res.devCode);
       setStep('otp');
     } catch (err: any) {
@@ -296,7 +323,8 @@ export const LoginPage = () => {
             >
               <MessageSquare className="w-4 h-4 text-cyan/60 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-white/35 leading-relaxed">
-                Verificación en 2 pasos activada. Recibirás un código de 6 dígitos por <span className="text-cyan/60">WhatsApp</span>.
+                Verificación en 2 pasos activada. Elegí recibir tu código por{' '}
+                <span className="text-cyan/60">WhatsApp</span>, <span className="text-cyan/60">email</span> o ambos.
               </p>
             </motion.div>
           </div>
@@ -341,6 +369,21 @@ export const LoginPage = () => {
                 </div>
 
                 <form onSubmit={handleCredentials} className="space-y-4">
+                  {/* WAHA status banner */}
+                  <AnimatePresence>
+                    {wahaOk === false && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-warning/8 border border-warning/25 text-warning text-sm"
+                      >
+                        <WifiOff className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                        <span>WhatsApp desconectado — el código 2FA no se enviará hasta que se reconecte en WAHA.</span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   <AnimatePresence>
                     {error && (
                       <motion.div
@@ -407,6 +450,51 @@ export const LoginPage = () => {
                     </div>
                   </div>
 
+                  {/* ── Canal de verificación ── */}
+                  <div>
+                    <label className="block text-xs font-semibold text-white/38 mb-2.5 uppercase tracking-wider">
+                      Recibir código por
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {([
+                        { key: 'whatsapp', icon: MessageSquare, label: 'WhatsApp', disabled: wahaOk === false },
+                        { key: 'email',    icon: Mail,          label: 'Email',     disabled: false },
+                        { key: 'both',     icon: Shield,        label: 'Ambos',     disabled: wahaOk === false },
+                      ] as const).map(opt => {
+                        const Icon    = opt.icon;
+                        const active  = channel === opt.key;
+                        const blocked = opt.disabled;
+                        return (
+                          <button
+                            key={opt.key}
+                            type="button"
+                            disabled={blocked}
+                            onClick={() => !blocked && setChannel(opt.key)}
+                            title={blocked ? 'WhatsApp desconectado' : undefined}
+                            className={`
+                              flex flex-col items-center gap-1.5 py-2.5 px-2 rounded-xl border text-xs font-semibold
+                              transition-all duration-150 select-none
+                              ${blocked
+                                ? 'opacity-25 cursor-not-allowed border-white/[0.06] text-white/20'
+                                : active
+                                  ? 'border-cyan/50 bg-cyan/[0.12] text-cyan/90 shadow-[0_0_12px_rgba(0,217,255,0.12)]'
+                                  : 'border-white/[0.08] bg-white/[0.03] text-white/35 hover:border-white/20 hover:text-white/55 hover:bg-white/[0.05]'
+                              }
+                            `}
+                          >
+                            <Icon className="w-4 h-4" />
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {wahaOk === false && (
+                      <p className="text-[10px] text-warning/60 mt-1.5 flex items-center gap-1">
+                        <WifiOff className="w-3 h-3" /> WhatsApp sin conexión — solo email disponible
+                      </p>
+                    )}
+                  </div>
+
                   {/* Submit */}
                   <motion.button
                     type="submit"
@@ -426,7 +514,7 @@ export const LoginPage = () => {
                           transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
                           className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
                         />
-                        Verificando...
+                        Enviando código...
                       </>
                     ) : (
                       <>
@@ -460,12 +548,14 @@ export const LoginPage = () => {
 
                 <div className="mb-8">
                   <div className="w-12 h-12 rounded-2xl bg-cyan/10 border border-cyan/20 flex items-center justify-center mb-4">
-                    <MessageSquare className="w-6 h-6 text-cyan/70" />
+                    {channel === 'email' ? <Mail className="w-6 h-6 text-cyan/70" /> : <MessageSquare className="w-6 h-6 text-cyan/70" />}
                   </div>
                   <h2 className="text-xl font-bold text-white/85 mb-1">Verifica tu identidad</h2>
                   <p className="text-sm text-white/35 leading-relaxed">
-                    Ingresa el código de 6 dígitos enviado por WhatsApp
-                    {phoneMasked && <> al número <span className="text-white/55 data-mono">{phoneMasked}</span></>}
+                    Código de 6 dígitos enviado por{' '}
+                    {channel === 'whatsapp' && <>WhatsApp{phoneMasked && <> al <span className="text-white/55 font-mono">{phoneMasked}</span></>}</>}
+                    {channel === 'email'    && <>email{emailMasked && <> a <span className="text-white/55 font-mono">{emailMasked}</span></>}</>}
+                    {channel === 'both'     && <>WhatsApp y email</>}
                   </p>
 
                   {/* Dev mode hint */}

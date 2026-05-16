@@ -802,20 +802,20 @@ export const SupportPage = () => {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-text-main tracking-tight">Soporte Técnico</h1>
           <p className="text-sm text-text-muted mt-0.5">
             {stats.active} activo{stats.active !== 1 ? 's' : ''} · {stats.resolved} resuelto{stats.resolved !== 1 ? 's' : ''}
           </p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <div className="relative">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted pointer-events-none" />
             <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Buscar ticket, cliente o tipo..."
-              className="pl-9 pr-3 py-2 rounded-lg border border-border text-sm bg-surface text-text-main placeholder:text-text-subtle focus:outline-none focus:border-primary/35 transition-colors w-56" />
+              className="pl-9 pr-3 py-2 rounded-lg border border-border text-sm bg-surface text-text-main placeholder:text-text-subtle focus:outline-none focus:border-primary/35 transition-colors w-full sm:w-56" />
           </div>
-          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className={SELECT_CLS}>
+          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className={cn(SELECT_CLS, 'w-full sm:w-auto')}>
             <option value="all">Todos los tipos</option>
             {typeOptions.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
@@ -863,7 +863,7 @@ export const SupportPage = () => {
       ) : (
         <div className="rounded-xl border border-border bg-surface overflow-hidden" style={{ boxShadow: 'rgba(0,0,0,0.03) 0px 2px 12px' }}>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[580px]">
               <thead>
                 <tr className="border-b border-border bg-surface-raised/30">
                   {['Ticket', 'Tipo', 'Prioridad', 'Estado', 'Fecha', 'Acciones'].map(col => (
